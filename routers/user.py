@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post(
-    path="/",
+    path="",
     response_model=user_schemas.SuccessResponseSchema,
     responses={
         status.HTTP_409_CONFLICT: {
@@ -35,9 +35,6 @@ async def add_user(
     db: sqlite3.Connection = Depends(get_db)
 ):
     """Adds a user to the database.
-
-    Returns:
-        str: The new user's record
     """
     # check for duplicate client ID or phone number
     try:
@@ -118,9 +115,6 @@ async def get_user_by_client_id(
     db: sqlite3.Connection = Depends(get_db)
 ):
     """Gets a user's record using the client ID.
-
-    Returns:
-        str: The user's record
     """
     try:
         # get the new user's record using the client ID
@@ -169,9 +163,6 @@ async def get_user_by_phone_number(
     db: sqlite3.Connection = Depends(get_db)
 ):
     """Gets a user's record using the phone number.
-
-    Returns:
-        str: The user's record
     """
     try:
         # get the new user's record using the phone number
@@ -198,4 +189,51 @@ async def get_user_by_phone_number(
     return user_schemas.SuccessResponseSchema(
         message="User retrieved successfully",
         user=user_data,
+    )
+
+
+@router.delete(
+    path="/{phone_number}",
+    response_model=user_schemas.SuccessResponseBaseSchema,
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": shared_schemas.ErrorResponseSchema,
+            "description": "Not found"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": str,
+            "description": "Internal server error"
+        },
+    }
+)
+async def delete_user_by_phone_number(
+    phone_number: str,
+    db: sqlite3.Connection = Depends(get_db)
+):
+    """Deletes a user's record using the Phone Number.
+    """
+    try:
+        # delete the user's record using the phone number
+        is_deleted: bool = await user_crud.UserQuery.delete_user_by_phone_number(db, phone_number)
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "message": "Internal server error"
+            },
+        )
+
+    # return an error response when it is not found
+    if not is_deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "message": f"User with Phone Number `{phone_number}` not found"
+            },
+        )
+
+    # return the user's record
+    return user_schemas.SuccessResponseBaseSchema(
+        message="User deleted successfully"
     )

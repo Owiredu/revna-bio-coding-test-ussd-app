@@ -110,3 +110,21 @@ class UserQuery:
         db.commit()
 
         return cursor.rowcount >= 1
+    
+    @staticmethod
+    async def delete_user_by_phone_number(db: sqlite3.Connection, phone_number: str) -> bool:
+        """Delete a user's record using the phone number
+
+        Args:
+            db (sqlite3.Connection): The database connection handle
+            phone_number (str): The user's phone number
+
+        Returns:
+            bool: True for success and False for failure
+        """
+        # delete the user
+        cursor: sqlite3.Cursor = db.execute(
+            "DELETE FROM users WHERE phone_number = ?", (phone_number,))
+        db.commit()
+
+        return cursor.rowcount >= 1
