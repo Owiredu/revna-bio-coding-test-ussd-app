@@ -8,31 +8,14 @@ from routers import user, ussd
 app = FastAPI(title=config.SERVICE_NAME, version=config.SERVICE_VERSION)
 
 
-# add middleware
-if config.ENV == "dev":
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=config.DEV_CORS_ALLOW_ORIGINS,
-        allow_credentials=config.DEV_CORS_ALLOW_CREDENTIALS,
-        allow_methods=config.DEV_CORS_ALLOW_METHODS,
-        allow_headers=config.DEV_CORS_ALLOW_HEADERS
-    )
-elif config.ENV == "test":
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=config.TEST_CORS_ALLOW_ORIGINS,
-        allow_credentials=config.TEST_CORS_ALLOW_CREDENTIALS,
-        allow_methods=config.TEST_CORS_ALLOW_METHODS,
-        allow_headers=config.TEST_CORS_ALLOW_HEADERS
-    )
-elif config.ENV == "prod":
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=config.PROD_CORS_ALLOW_ORIGINS,
-        allow_credentials=config.PROD_CORS_ALLOW_CREDENTIALS,
-        allow_methods=config.PROD_CORS_ALLOW_METHODS,
-        allow_headers=config.PROD_CORS_ALLOW_HEADERS
-    )
+# add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=config.CORS_ALLOW_ORIGINS,
+    allow_credentials=config.CORS_ALLOW_CREDENTIALS,
+    allow_methods=config.CORS_ALLOW_METHODS,
+    allow_headers=config.CORS_ALLOW_HEADERS
+)
 
 
 # add routers
