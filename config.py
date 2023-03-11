@@ -13,6 +13,7 @@ CORS_ALLOW_CREDENTIALS: Final[bool] = True
 CORS_ALLOW_METHODS: Final[list[str]] = [
     "GET",
     "POST",
+    "DELETE",
     "OPTIONS"
 ]
 CORS_ALLOW_HEADERS: Final[list[str]] = [
